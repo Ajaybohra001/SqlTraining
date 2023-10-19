@@ -84,7 +84,16 @@ INNER JOIN tbl_departments d ON c.DepartmentID = d.DepartmentID
 WHERE s.FirstName = d.DepartmentName;
 
 --Question 7:Find the department with the highest average number of students enrolled per course.
-
+SELECT TOP 1 d.DepartmentName  , AVG(Student_count) AS Avg_Students_Per_Course
+FROM (
+    SELECT c.DepartmentID , COUNT(e.CourseID) AS Student_count
+    FROM tbl_enrollments  AS e
+    INNER JOIN tbl_courses  AS c ON e.CourseID = c.courseID
+    GROUP BY c.DepartmentID , e.CourseID
+) AS subquery
+INNER JOIN tbl_departments  AS d ON d.DepartmentID  = subquery.DepartmentID 
+GROUP BY d.DepartmentName 
+ORDER BY Avg_Students_Per_Course DESC
 
 --Question 8:Retrieve the students who have not enrolled in any courses offered by the "Science" department.
 
@@ -104,3 +113,18 @@ FROM tbl_departments d
 INNER JOIN tbl_courses c ON d.DepartmentID = c.DepartmentID
 INNER JOIN tbl_enrollments  e ON c.CourseID = e.CourseID
 GROUP BY d.DepartmentName, c.CourseName;
+
+--Questsion 10:Calculate the total number of students in the "Engineering" department who have enrolled in
+--more courses than the average number of courses per student in that department.
+
+SELECT  d.DepartmentName , AVG(Student_count) AS Avg_Students_Per_Course
+FROM (
+    SELECT c.DepartmentID, COUNT(e.CourseID) AS Student_count
+    FROM tbl_Enrollments AS e
+    INNER JOIN tbl_Courses AS c ON e.CourseID = c.CourseID 
+    GROUP BY c.DepartmentID, e.CourseID
+) AS subquery
+INNER JOIN tbl_Departments AS d ON d.DepartmentID = subquery.DepartmentID
+where d.DepartmentName ='Dotnet'
+GROUP BY d.DepartmentName ,d.DepartmentID 
+ORDER BY Avg_Students_Per_Course DESC
